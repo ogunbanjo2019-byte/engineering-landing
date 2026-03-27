@@ -155,6 +155,4 @@ document.addEventListener("DOMContentLoaded", () => {
       c.classList.add("visible");
     });
   }
-
-  console.log("✅ Cruise-Way Engineering Ltd — Website Loaded");
 });
