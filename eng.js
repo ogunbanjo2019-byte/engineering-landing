@@ -1,6 +1,9 @@
 const WHATSAPP_NUMBER  = "2349054633401"; 
 const WHATSAPP_MESSAGE = "Hello Cruise-Way Engineering Limited, I'd like to enquire about your services. Please get back to me. Thank you!";
 
+// API endpoint for backend
+const API_ENDPOINT = "http://localhost:3000/api/send-message";
+
 function initWhatsApp() {
   const btn = document.getElementById("whatsapp-btn");
   if (!btn) return;
@@ -44,6 +47,7 @@ function initHamburger() {
     }
   });
 }
+
 function initScrollReveal() {
   const cards = document.querySelectorAll(".service-card");
 
@@ -88,38 +92,74 @@ function initYear() {
   if (el) el.textContent = new Date().getFullYear();
 }
 
+function showFormMessage(message, type) {
+  const messageEl = document.getElementById("formMessage");
+  if (!messageEl) return;
+  
+  messageEl.textContent = message;
+  messageEl.className = `form-message ${type}`;
+  messageEl.style.display = "block";
+  
+  if (type === "success") {
+    setTimeout(() => {
+      messageEl.style.display = "none";
+    }, 5000);
+  }
+}
+
 function initContactForm() {
   const form = document.getElementById("contactForm");
   if (!form) return;
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const btn = form.querySelector("button[type='submit']");
-    const original = btn.innerHTML;
+    const btnText = btn.querySelector(".btn-text");
+    const originalText = btnText.textContent;
 
-    btn.innerHTML = '<i class="fas fa-check"></i> Message Sent!';
-    btn.style.background = "#25D366";
+    // Disable button and show loading state
     btn.disabled = true;
+    btnText.textContent = "Sending...";
+    btn.style.opacity = "0.7";
 
-    const nameEl    = form.querySelector("input[type='text']");
-    const serviceEl = form.querySelector("select");
-    const msgEl     = form.querySelector("textarea");
+    try {
+      // Collect form data
+      const formData = {
+        user_name: form.querySelector("input[name='user_name']").value,
+        user_email: form.querySelector("input[name='user_email']").value,
+        user_phone: form.querySelector("input[name='user_phone']").value || "",
+        service: form.querySelector("select[name='service']").value,
+        message: form.querySelector("textarea[name='message']").value
+      };
 
-    const name    = nameEl    ? nameEl.value    : "a visitor";
-    const service = serviceEl ? serviceEl.value : "your services";
-    const message = msgEl     ? msgEl.value     : "";
+      // Send to backend
+      const response = await fetch(API_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
 
-    const waMsg = `Hello Cruise-Way Engineering! My name is ${name}. I'm interested in: ${service}. ${message}`;
-    const waURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(waMsg)}`;
+      const result = await response.json();
 
-    setTimeout(() => {
-      window.open(waURL, "_blank", "noopener");
-      btn.innerHTML = original;
-      btn.style.background = "";
+      if (response.ok && result.success) {
+        showFormMessage("✅ Success! Your message has been sent. We'll contact you within 24 hours.", "success");
+        form.reset();
+        btnText.textContent = originalText;
+      } else {
+        showFormMessage("❌ " + (result.error || "Error sending message. Please try again."), "error");
+      }
+
+    } catch (error) {
+      console.error("Error:", error);
+      showFormMessage("❌ Connection error. Make sure the backend server is running on port 3000.", "error");
+    } finally {
+      // Re-enable button
       btn.disabled = false;
-      form.reset();
-    }, 1800);
+      btn.style.opacity = "1";
+    }
   });
 }
 

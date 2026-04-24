@@ -1,0 +1,29 @@
+{
+  "name": "engineering-landing",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ogunbanjo2019-byte/engineering-landing.git"
+  },
+  "keywords": ["engineering", "construction", "landing-page"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ogunbanjo2019-byte/engineering-landing/issues"
+  },
+  "homepage": "https://github.com/ogunbanjo2019-byte/engineering-landing#readme",
+  "description": "Cruise-Way Engineering Limited - Professional Engineering Services Website",
+  "dependencies": {
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "nodemailer": "^8.0.5"
+  }
+}
