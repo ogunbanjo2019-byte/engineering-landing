@@ -11,7 +11,11 @@
     "type": "git",
     "url": "git+https://github.com/ogunbanjo2019-byte/engineering-landing.git"
   },
-  "keywords": ["engineering", "construction", "landing-page"],
+  "keywords": [
+    "engineering",
+    "construction",
+    "landing-page"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
