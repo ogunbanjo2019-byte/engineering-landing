@@ -111,55 +111,32 @@ function initContactForm() {
   const form = document.getElementById("contactForm");
   if (!form) return;
 
-  form.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const btn = form.querySelector("button[type='submit']");
-    const btnText = btn.querySelector(".btn-text");
-    const originalText = btnText.textContent;
+    const name = form.querySelector("input[name='user_name']").value;
+    const email = form.querySelector("input[name='user_email']").value;
+    const phone = form.querySelector("input[name='user_phone']").value || "Not provided";
+    const service = form.querySelector("select[name='service']").value;
+    const message = form.querySelector("textarea[name='message']").value;
 
-    // Disable button and show loading state
-    btn.disabled = true;
-    btnText.textContent = "Sending...";
-    btn.style.opacity = "0.7";
+    const whatsappMessage = `*New Inquiry from Cruise-Way Website*\n\n` +
+      `*Name:* ${name}\n` +
+      `*Email:* ${email}\n` +
+      `*Phone:* ${phone}\n` +
+      `*Service:* ${service}\n\n` +
+      `*Message:* ${message}`;
 
-    try {
-      // Collect form data
-      const formData = {
-        user_name: form.querySelector("input[name='user_name']").value,
-        user_email: form.querySelector("input[name='user_email']").value,
-        user_phone: form.querySelector("input[name='user_phone']").value || "",
-        service: form.querySelector("select[name='service']").value,
-        message: form.querySelector("textarea[name='message']").value
-      };
+    const encodedMessage = encodeURIComponent(whatsappMessage);
+    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
 
-      // Send to backend
-      const response = await fetch(API_ENDPOINT, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const result = await response.json();
-
-      if (response.ok && result.success) {
-        showFormMessage("✅ Success! Your message has been sent. We'll contact you within 24 hours.", "success");
-        form.reset();
-        btnText.textContent = originalText;
-      } else {
-        showFormMessage("❌ " + (result.error || "Error sending message. Please try again."), "error");
-      }
-
-    } catch (error) {
-      console.error("Error:", error);
-      showFormMessage("❌ Connection error. Make sure the backend server is running on port 3000.", "error");
-    } finally {
-      // Re-enable button
-      btn.disabled = false;
-      btn.style.opacity = "1";
-    }
+    // Show success message and redirect
+    showFormMessage("✅ Opening WhatsApp to send your message...", "success");
+    
+    setTimeout(() => {
+      window.open(whatsappUrl, '_blank');
+      form.reset();
+    }, 1500);
   });
 }
 
